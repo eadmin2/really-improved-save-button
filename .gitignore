@@ -1,39 +1,45 @@
-# Node.js dependencies
+# Exclude everything by default
+/*
+
+# Allow plugin PHP files, main CSS/JS, readme, and license
+!really-improved-save-button.php
+!readme.txt
+!COPYING.txt
+!uninstall.php
+
+# Allow plugin directories and their PHP files
+!actions/
+!actions/*.php
+!lib/
+!lib/*.php
+!css/
+!css/*.css
+!js/
+!js/*.js
+
+# Allow images or assets if you have them (uncomment if needed)
+#!images/
+#!images/*
+
+# Exclude development and build files
 node_modules/
-
-# Build artifacts
+package.json
+package-lock.json
+yarn.lock
 *.log
-dist/
+*.zip
+*.tar.gz
 build/
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# IDE/project files
+dist/
+scss/
+*.scss
 .vscode/
 .idea/
+.sass-cache/
 *.sublime-project
 *.sublime-workspace
 
-# WordPress specific
-wp-content/uploads/
-wp-content/upgrade/
-
-# Composer dependencies (if used)
-vendor/
-
-# Plugin/package archives
-*.zip
-*.tar.gz
-
-# Misc
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Ignore SCSS cache
-.sass-cache/
-
-# Ignore PHPStorm
+# OS/IDE files
+.DS_Store
+Thumbs.db
 .phpstorm.meta.php 
