@@ -37,9 +37,6 @@ Through the plugin's settings page, you can choose which actions to show and whi
 - Actions like Duplicate, Next, and Previous use the WordPress REST API and may require appropriate permissions.
 - All actions are available in both Classic and Block editors.
 
-**Want to help translate?**
-This plugin now uses the Wordpress Translation Service for translations. [Please visit the plugin's page to submit your translation!](https://translate.wordpress.org/projects/wp-plugins/improved-save-button)
-
 == Installation ==
 
 1. Download Really Improved Save Button.
