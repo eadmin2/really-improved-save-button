@@ -1,0 +1,39 @@
+# Node.js dependencies
+node_modules/
+
+# Build artifacts
+*.log
+dist/
+build/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE/project files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# WordPress specific
+wp-content/uploads/
+wp-content/upgrade/
+
+# Composer dependencies (if used)
+vendor/
+
+# Plugin/package archives
+*.zip
+*.tar.gz
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore SCSS cache
+.sass-cache/
+
+# Ignore PHPStorm
+.phpstorm.meta.php 
