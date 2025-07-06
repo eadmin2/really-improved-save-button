@@ -44,6 +44,7 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 		parent::__construct();
 		add_action( 'post_submitbox_start', array( $this, 'post_submitbox_start' ) );
 		add_filter( 'removable_query_args', array( get_called_class(), 'removable_query_args' ), 99 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_view_popup_script' ) );
 	}
 
 	/**
@@ -60,59 +61,31 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	}
 
 	/**
-	 * Adds 2 JavaScript to the page:
-	 * - One that opens a new window when the user uses this action.
-	 *   This window contains a text asking the user to wait for the
-	 *   reload.
-	 * - One that is called after the post edit page reloads (after
-	 *   this action was used to save the post) and that reloads the
-	 *   popup with the post's frontend page.
+	 * Enqueue the JS for the Save and View (popup) action and localize variables.
 	 */
-	function post_submitbox_start() {
-		ob_start();
-		$js_window_name = 'fwc-save-and-then-post-preview';
-		
-		?>
-		<script>
-		<?php
-		/*
-		 * Script included when the post editing page reloads after this
-		 * action was used (checks the HTTP_PARAM_RELOAD_POPUP parameter).
-		 * The JS script reloads the popup (that was opened) with the post's
-		 * frontend page url.
-		 */
-		if( isset( $_GET[ self::HTTP_PARAM_RELOAD_POPUP ] ) && $_GET[ self::HTTP_PARAM_RELOAD_POPUP ] === '1' ) :
-		?>
-			var url = "<?php echo esc_js( get_permalink() ); ?>",
-				popupWindow = window.open( url, '<?php echo esc_js( $js_window_name ); ?>' );
-		<?php endif;
+	public function enqueue_view_popup_script($hook) {
+		if ($hook !== 'post.php' && $hook !== 'post-new.php') {
+			return;
+		}
 
-		/*
-		 * Script that listens to the post submit and opens a popup
-		 * (asking the user to wait) if this action was used.
-		 */
-		?>
-		jQuery(document).on('fwc-sat:submit', '#post', function( event, postEditForm ) {
-			var action = postEditForm.getAction(),
-				popupWindow;
+		wp_enqueue_script(
+			'fwc-view-popup',
+			plugin_dir_url(__FILE__) . '../js/view-popup.js',
+			array('jquery'),
+			'1.0',
+			true
+		);
 
-			if( ! action || action.id !== "<?php echo esc_js( $this->get_id() ); ?>" ) {
-				return;
-			}
+		$reload_popup = isset($_GET[self::HTTP_PARAM_RELOAD_POPUP]) && $_GET[self::HTTP_PARAM_RELOAD_POPUP] === '1';
+		$permalink = $reload_popup ? get_permalink() : '';
 
-			popupWindow = window.open( '', '<?php echo esc_js( $js_window_name ); ?>' );
-			popupWindow.document.open();
-			// translators: Message shown in the new window when "Save and view (new window)" is used.
-			popupWindow.document.write("<?php echo esc_js( _ex('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'really-improved-save-button') ); ?>");
-			popupWindow.document.close();
-		});
-		</script>
-		<?php
-
-		$html = ob_get_contents();
-		ob_end_clean();
-
-		echo wp_kses_post($html);
+		wp_localize_script('fwc-view-popup', 'FWCViewPopupData', array(
+			'actionId'    => $this->get_id(),
+			'windowName'  => 'fwc-save-and-then-post-preview',
+			'waitMessage' => _ex('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'really-improved-save-button'),
+			'reloadPopup' => $reload_popup,
+			'permalink'   => $permalink,
+		));
 	}
 
 	/**
@@ -172,5 +145,12 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 		$url = get_permalink( $post );
 		// error_log('[SaveAndThen] Save and View Popup get_redirect_url called. Redirecting to: ' . $url);
 		return $url;
+	}
+
+	/**
+	 * Outputs content at the start of the post submit box. Placeholder to prevent fatal error.
+	 */
+	public function post_submitbox_start() {
+	    // No output needed for now. Implement if needed.
 	}
 }

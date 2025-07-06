@@ -5,10 +5,12 @@ window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};
 (function($) {
     var SAT = window.FastWebCreations.SaveAndThen;
 
+    // Add debug logging for dropdown issues
+    console.log('[FWC] post-edit.js loaded');
     $(function() {
         var config = SAT.config,
             $form = $('#post');
-
+        console.log('[FWC] Document ready. Config:', config, 'Form:', $form.length);
         if (config && $form.length) {
             new SAT.PostEditForm($form, config);
         }
@@ -146,6 +148,17 @@ window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};
         this.$dropdownMenu = this.createDropdownMenu();
         this.$container = this.createContainer();
 
+        // Remove dropdown menu shown class on load to ensure menu is hidden
+        this.$container.removeClass('fwc-sat-dropdown-menu-shown');
+        console.log('[FWC] Removed fwc-sat-dropdown-menu-shown on load');
+
+        // Debug: log initial state
+        console.log('[FWC] PublishButtonSet initialized', {
+            container: this.$container.get(0),
+            dropdownMenu: this.$dropdownMenu.get(0),
+            dropdownButton: this.$dropdownButton.get(0)
+        });
+
         this.setupDocumentClickListener();
         this.setupMainButtonListeners();
         this.setupDropdownButtonListeners();
@@ -238,9 +251,18 @@ window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};
         setupDropdownButtonListeners: function() {
             var self = this;
             this.$dropdownButton.click(function(event) {
-                if (!self.menuShown()) {
-                    self.showMenu();
-                    event.stopPropagation();
+                try {
+                    console.log('[FWC] Dropdown button clicked. Menu shown?', self.menuShown());
+                    if (!self.menuShown()) {
+                        self.showMenu();
+                        console.log('[FWC] showMenu called');
+                        event.stopPropagation();
+                    } else {
+                        self.hideMenu();
+                        console.log('[FWC] hideMenu called');
+                    }
+                } catch (e) {
+                    console.error('[FWC] Error in dropdownButton click:', e);
                 }
             });
         },
@@ -261,10 +283,12 @@ window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};
         },
 
         showMenu: function() {
+            console.log('[FWC] showMenu: adding class to container', this.$container.get(0));
             this.$container.addClass('fwc-sat-dropdown-menu-shown');
         },
 
         hideMenu: function() {
+            console.log('[FWC] hideMenu: removing class from container', this.$container.get(0));
             this.$container.removeClass('fwc-sat-dropdown-menu-shown');
         },
 
