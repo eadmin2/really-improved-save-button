@@ -71,8 +71,13 @@ class FWC_Save_And_Then_Post_Save {
 			return $location;
 		}
 
+		// Nonce verification for save-and-then action
+		if ( ! isset( $_POST['_fwc_sat_action_nonce'] ) || ! wp_verify_nonce( $_POST['_fwc_sat_action_nonce'], 'fwc_sat_action' ) ) {
+			return $location;
+		}
+
 		// The FWC_Save_And_Then_Action id
-		$sat_action_id = trim( $_POST[ FWC_Save_And_Then_Post_Edit::HTTP_PARAM_ACTION ] );
+		$sat_action_id = sanitize_text_field( wp_unslash( $_POST[ FWC_Save_And_Then_Post_Edit::HTTP_PARAM_ACTION ] ) );
 		$current_post = get_post( $post_id );
 
 		// We get the FWC_Save_And_Then_Action
@@ -88,7 +93,11 @@ class FWC_Save_And_Then_Post_Save {
 		// If an error was returned
 		if( is_wp_error( $new_location ) ) {
 			$error = $new_location;
-			wp_die($error);
+			if ( is_wp_error( $error ) ) {
+				wp_die( esc_html( $error->get_error_message() ) );
+			} else {
+				wp_die( esc_html( $error ) );
+			}
 		}
 
 		if( $new_location ) {

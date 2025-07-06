@@ -31,7 +31,14 @@ if( ! is_multisite() ) {
 } else {
 	global $wpdb;
 	
-	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$blog_ids = wp_cache_get( 'fwc_all_blog_ids', 'fwc_save_and_then' );
+	if ( false === $blog_ids ) {
+		// Direct database query is used here to retrieve all blog IDs for multisite uninstall.
+		// This is necessary because WordPress does not provide a built-in function for this.
+		// Result is cached to avoid repeated queries and minimize DB load during uninstall.
+		$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+		wp_cache_set( 'fwc_all_blog_ids', $blog_ids, 'fwc_save_and_then', 300 );
+	}
 	$original_blog_id = get_current_blog_id();
 
 	foreach ( $blog_ids as $blog_id ) {

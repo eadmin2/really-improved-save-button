@@ -1,9 +1,9 @@
 === Really Improved Save Button ===
 Contributors: FastWebCreations LLC
-Tags: publish, save, close, list, edit, editing, return to list, close post, posts list, update, save and new, save and return, save and list, save and next, next post, save and previous, save and view, previous post, admin, administration, editor, multisite, custom post type, page, post, save and return, duplicate, save and duplicate
+Tags: save, publish, edit, duplicate, list
 Requires at least: 5.0
-Tested up to: 6.5
-Stable tag: 1.3.0
+Tested up to: 6.8.1
+Stable tag: 1.0.0
 Version: 1.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html

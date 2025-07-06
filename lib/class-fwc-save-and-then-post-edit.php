@@ -104,14 +104,14 @@ class FWC_Save_And_Then_Post_Edit {
 	 * redirection).
 	 */
 	static function post_submitbox_start() {
-		error_log('FWC_Save_And_Then_Post_Edit::post_submitbox_start fired');
+		// error_log('FWC_Save_And_Then_Post_Edit::post_submitbox_start fired');
 		echo '<!-- ' . esc_html('FWC_Save_And_Then_Post_Edit::post_submitbox_start fired') . ' -->';
 		$options = FWC_Save_And_Then_Settings::get_options();
 		$enabled_actions = FWC_Save_And_Then_Settings::get_enabled_actions();
 		$current_post = get_post();
 
 		if( ! count( $enabled_actions ) ) {
-			error_log('FWC_Save_And_Then_Post_Edit::post_submitbox_start: No enabled actions');
+			// error_log('FWC_Save_And_Then_Post_Edit::post_submitbox_start: No enabled actions');
 			echo '<!-- ' . esc_html('FWC_Save_And_Then_Post_Edit::post_submitbox_start: No enabled actions') . ' -->';
 			return;
 		}
@@ -140,6 +140,8 @@ class FWC_Save_And_Then_Post_Edit {
 		echo 'window.FastWebCreations.SaveAndThen.HTTP_PARAM_ACTION = "' . esc_js( self::HTTP_PARAM_ACTION ) . '";';
 		echo 'window.FastWebCreations.SaveAndThen.config = ' . wp_json_encode( $js_object ) . ';';
 		echo '</script>';
+		// Output nonce field for save-and-then action
+		wp_nonce_field('fwc_sat_action', '_fwc_sat_action_nonce');
 	}
 } // end class
 

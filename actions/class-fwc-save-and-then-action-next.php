@@ -33,7 +33,8 @@ class FWC_Save_And_Then_Action_Next extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_name() {
-		return _x('Save and Next', 'Action name (used in settings page)', 'improved-save-button');
+		// translators: Action name (used in settings page)
+		return _x('Save and Next', 'Action name (used in settings page)', 'really-improved-save-button');
 	}
 
 	/**
@@ -47,14 +48,16 @@ class FWC_Save_And_Then_Action_Next extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_description() {
-		return _x('Shows the <strong>next post</strong> edit form after save.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('Shows the <strong>next post</strong> edit form after save.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_button_label_pattern( $post ) {
-		return _x('%s and Next', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'improved-save-button');
+		// translators: Button label (used in post edit page). %s = "Publish" or "Update"
+		return _x('%s and Next', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'really-improved-save-button');
 	}
 
 	/**
@@ -80,10 +83,12 @@ class FWC_Save_And_Then_Action_Next extends FWC_Save_And_Then_Action {
 	 */
 	function get_button_title( $post ) {
 		if( ! $this->is_enabled( $post ) ) {
-			return _x('You are at the last post.', 'Button title attribute (used in post edit page)', 'improved-save-button');
+			// translators: Button title attribute (used in post edit page)
+			return _x('You are at the last post.', 'Button title attribute (used in post edit page)', 'really-improved-save-button');
 		} else {
 			$next_post = FWC_Save_And_Then_Utils::get_adjacent_post( $post, 'next' );
-			return sprintf( _x('The next post is "%s".', 'Button title attribute (used in post edit page). %s = other post name', 'improved-save-button'), $next_post->post_title );
+			// translators: Button title attribute (used in post edit page). %s = other post name
+			return sprintf( _x('The next post is "%s".', 'Button title attribute (used in post edit page). %s = other post name', 'really-improved-save-button'), $next_post->post_title );
 		}
 	}
 
@@ -99,7 +104,7 @@ class FWC_Save_And_Then_Action_Next extends FWC_Save_And_Then_Action {
 	function get_redirect_url( $current_url, $post ) {
 		$next_post = FWC_Save_And_Then_Utils::get_adjacent_post( $post, 'next' );
 		$url = $next_post ? get_edit_post_link( $next_post->ID, 'url' ) : '';
-		error_log('[SaveAndThen] Save and Next get_redirect_url called. Redirecting to: ' . $url);
+		// error_log('[SaveAndThen] Save and Next get_redirect_url called. Redirecting to: ' . $url);
 		return $url;
 	}
 }

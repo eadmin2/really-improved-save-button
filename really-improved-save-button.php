@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 /*
 Plugin Name: Really Improved Save Button
 Description: Adds a new "Save" button to the Post Edit screen that saves the post and immediately takes you to your next action: the previous page, the next/previous post, the posts list, the post's frontend, etc.
@@ -7,6 +11,8 @@ Version: 1.0.0
 Author URI: http://www.fastwebcreations.com
 Domain Path: /
 Text Domain: really-improved-save-button
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 /**

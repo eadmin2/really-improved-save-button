@@ -31,7 +31,8 @@ class FWC_Save_And_Then_Action_New extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_name() {
-		return _x('Save and New', 'Action name (used in settings page)', 'improved-save-button');
+		// translators: Action name (used in settings page)
+		return _x('Save and New', 'Action name (used in settings page)', 'really-improved-save-button');
 	}
 
 	/**
@@ -45,14 +46,16 @@ class FWC_Save_And_Then_Action_New extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_description() {
-		return _x('Shows the <strong>new post</strong> form after save.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('Shows the <strong>new post</strong> form after save.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_button_label_pattern( $post ) {
-		return _x('%s and New', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'improved-save-button');
+		// translators: Button label (used in post edit page). %s = "Publish" or "Update"
+		return _x('%s and New', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'really-improved-save-button');
 	}
 
 	/**

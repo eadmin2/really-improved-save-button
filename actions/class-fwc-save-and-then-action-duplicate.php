@@ -32,7 +32,8 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_name() {
-		return _x('Save and Duplicate', 'Action name (used in settings page)', 'improved-save-button');
+		// translators: Action name (used in settings page)
+		return _x('Save and Duplicate', 'Action name (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
@@ -46,14 +47,16 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_description() {
-		return _x('<strong>Duplicates the current post</strong> (as a draft) after save and shows the duplicated post\'s edit page.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('<strong>Duplicates the current post</strong> (as a draft) after save and shows the duplicated post\'s edit page.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_button_label_pattern( $post ) {
-		return _x('%s and Duplicate', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'improved-save-button');
+		// translators: Button label (used in post edit page). %s = "Publish" or "Update"
+		return _x('%s and Duplicate', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'really-improved-save-button');
 	}
 
 	/**
@@ -103,7 +106,8 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 	protected static function copy_post( $post ) {
 		$insert_post_args = array(
 			'post_content' => $post->post_content,
-			'post_title' => $post->post_title . _x(' (copy)', 'Text added to the duplicated post\'s title (notice the space at the beginning).', 'improved-save-button'),
+			// translators: Text added to the duplicated post's title (notice the space at the beginning).
+			'post_title' => $post->post_title . _x(' (copy)', 'Text added to the duplicated post\'s title (notice the space at the beginning).', 'really-improved-save-button'),
 			'post_excerpt' => $post->post_excerpt,
 			'post_status' => 'draft',
 			'post_type' => $post->post_type,
@@ -167,6 +171,9 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 	protected static function copy_metas( $from_post, $to_post ) {
 		global $wpdb;
 
+		// Direct database queries are used here for efficient bulk meta copying.
+		// This is a one-time admin operation, only triggered by a user action in the admin panel.
+		// Caching is not needed because this is not a repeated or performance-critical operation.
 		// wp_insert_post allows to pass meta values, but since
 		// we would have to make one SQL query for each meta,
 		// we use those 2 SQL queries to copy them all.
@@ -180,8 +187,11 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 				$values[] = $meta_info->meta_key;
 				$values[] = $meta_info->meta_value;
 			}
+			// Direct database query for bulk insert. Safe in this admin-only context.
+			// No caching is needed as this is a one-time operation per duplication.
 			$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES ".implode(",", $placeholders);
-			$wpdb->query( $wpdb->prepare( $sql_query, ...$values ) );
+			$prepared_query = $wpdb->prepare( $sql_query, ...$values );
+			$wpdb->query( $prepared_query );
 		}
 	}
 }

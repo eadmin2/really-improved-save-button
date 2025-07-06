@@ -59,7 +59,7 @@ class FWC_Save_And_Then_Action_List extends FWC_Save_And_Then_Action {
 
 			if( isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']) ) {
 				// Only allow safe query strings
-				$url .= '?' . esc_url_raw( $_SERVER['QUERY_STRING'] );
+				$url .= '?' . esc_url_raw( wp_unslash( $_SERVER['QUERY_STRING'] ) );
 			}
 			setcookie( self::COOKIE_LAST_EDIT_URL, $url );
 		}
@@ -69,7 +69,8 @@ class FWC_Save_And_Then_Action_List extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_name() {
-		return _x('Save and List', 'Action name (used in settings page)', 'improved-save-button');
+		// translators: Action name (used in settings page)
+		return _x('Save and List', 'Action name (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
@@ -83,14 +84,16 @@ class FWC_Save_And_Then_Action_List extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_description() {
-		return _x('Shows the <strong>posts list</strong> after save.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('Shows the <strong>posts list</strong> after save.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_button_label_pattern( $post ) {
-		return _x('%s and List', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'improved-save-button');
+		// translators: Button label (used in post edit page). %s = "Publish" or "Update"
+		return _x('%s and List', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'really-improved-save-button');
 	}
 
 	/**
@@ -115,7 +118,7 @@ class FWC_Save_And_Then_Action_List extends FWC_Save_And_Then_Action {
 		}
 		$params[ FWC_Save_And_Then_Messages::HTTP_PARAM_UPDATED_POST_ID ] = $post->ID;
 		$redirect_url = FWC_Save_And_Then_Utils::admin_url( 'edit.php', $params );
-		error_log('[SaveAndThen] Save and List get_redirect_url called. Redirecting to: ' . $redirect_url);
+		// error_log('[SaveAndThen] Save and List get_redirect_url called. Redirecting to: ' . $redirect_url);
 		return $redirect_url;
 	}
 }

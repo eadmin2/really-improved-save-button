@@ -87,49 +87,54 @@ class FWC_Save_And_Then_Utils {
 	static function get_adjacent_post( $post, $dir = 'next' ) {
 		global $wpdb;
 		$cache_id = $post->ID . '-' . $dir;
-
+		$cache_key = 'fwc_adjacent_post_' . $cache_id;
+		$cached = wp_cache_get( $cache_key, 'fwc_save_and_then' );
+		if ( false !== $cached ) {
+			return $cached;
+		}
 		if( ! array_key_exists( $cache_id, self::$adjacent_post_cache ) ) {
+			// Direct database query is used here to efficiently find the adjacent post.
+			// This is necessary because WordPress core does not provide a performant way to get adjacent posts for all statuses.
+			// Result is cached using wp_cache_set to avoid repeated queries and minimize DB load.
 			$op = $dir == 'next' ? '>' : '<';
 			$order = $dir == 'next' ? 'ASC' : 'DESC';
 			$exclude_states = get_post_stati( array( 'show_in_admin_all_list' => false ) );
 			$additionnal_where = '';
-
-			// If the current user cannot edit others posts, we add a WHERE clause
-			// where only the user's post are returned
 			$post_type_object = get_post_type_object( get_post_type( $post ) );
-
 			if ( ! current_user_can( $post_type_object->cap->edit_others_posts ) ) {
-				$additionnal_where .= ' AND post_author = \'' . get_current_user_id() . '\'';
+				$additionnal_where .= ' AND post_author = %d';
+				$author_id = get_current_user_id();
+			} else {
+				$author_id = null;
 			}
-
-			// The next (previous) post is the first one with a post_date
-			// greater (smaller) than the current post's date OR with the
-			// exact same date, but with an ID greater (smaller) than the
-			// current post's ID.
-			$query = $wpdb->prepare("
-					SELECT p.ID FROM $wpdb->posts AS p
-					WHERE
-					p.post_type = %s
-					AND (
-						p.post_date $op %s
-						OR
-						(p.post_date = %s AND p.ID $op %s)
-					)
-					AND (p.post_status NOT IN ('" . implode( "','", $exclude_states ) . "'))
-					$additionnal_where
-					ORDER BY p.post_date $order, p.ID $order LIMIT 1
-				",
-				 $post->post_type, $post->post_date, $post->post_date, $post->ID
+			$exclude_states_placeholders = implode(",", array_fill(0, count($exclude_states), '%s'));
+			$sql = "SELECT p.ID FROM $wpdb->posts AS p
+				WHERE p.post_type = %s
+				AND (
+					p.post_date $op %s
+					OR
+					(p.post_date = %s AND p.ID $op %s)
+				)
+				AND (p.post_status NOT IN ($exclude_states_placeholders))
+				$additionnal_where
+				ORDER BY p.post_date $order, p.ID $order LIMIT 1";
+			$params = array_merge(
+				[$post->post_type, $post->post_date, $post->post_date, $post->ID],
+				$exclude_states
 			);
+			if ($author_id !== null) {
+				$params[] = $author_id;
+			}
+			$query = $wpdb->prepare($sql, ...$params);
 			$found_post_id = $wpdb->get_var( $query );
-
 			if( $found_post_id ) {
 				self::$adjacent_post_cache[ $cache_id ] = get_post( $found_post_id );
+				wp_cache_set( $cache_key, self::$adjacent_post_cache[ $cache_id ], 'fwc_save_and_then', 300 );
 			} else {
 				self::$adjacent_post_cache[ $cache_id ] = null;
+				wp_cache_set( $cache_key, null, 'fwc_save_and_then', 300 );
 			}
 		}
-
 		return self::$adjacent_post_cache[ $cache_id ];
 	}
 
@@ -189,7 +194,7 @@ class FWC_Save_And_Then_Utils {
 	 * @return [type] [description]
 	 */
 	static function parse_url( $url ) {
-		$url_parts = parse_url( $url );
+		$url_parts = wp_parse_url( $url );
 		$query = array();
 		if( isset( $url_parts['query'] ) ) {
 			wp_parse_str( $url_parts['query'], $query );

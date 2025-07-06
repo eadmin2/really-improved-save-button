@@ -68,8 +68,13 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function add_admin_scripts( $page_id ) {
 		if ( $page_id === 'settings_page_' . self::MENU_SLUG ) {
-			wp_enqueue_style('risb-modern-settings', plugins_url('../css/post-edit.css', __FILE__), [], null);
-			wp_enqueue_script('risb-modern-settings', plugins_url('../js/settings-page.js', __FILE__), [], null, true);
+			$plugin_version = '1.0.0'; // Update this if you bump the plugin version
+			$css_file = dirname(__FILE__) . '/../css/post-edit.css';
+			$js_file = dirname(__FILE__) . '/../js/settings-page.js';
+			$css_version = file_exists($css_file) ? filemtime($css_file) : $plugin_version;
+			$js_version = file_exists($js_file) ? filemtime($js_file) : $plugin_version;
+			wp_enqueue_style('risb-modern-settings', plugins_url('../css/post-edit.css', __FILE__), [], $css_version);
+			wp_enqueue_script('risb-modern-settings', plugins_url('../js/settings-page.js', __FILE__), [], $js_version, true);
 		}
 	}
 
@@ -99,7 +104,8 @@ class FWC_Save_And_Then_Settings {
 
 		add_settings_field(
 			'fwc-save-and-then-set-as-default',
-			_x('Display button as default', 'Used in settings page', 'improved-save-button'),
+			// translators: Used in settings page
+			_x('Display button as default', 'Used in settings page', 'really-improved-save-button'),
 			array( get_called_class(), 'create_setting_field' ),
 			self::MENU_SLUG,
 			$setting_section_name,
@@ -108,7 +114,8 @@ class FWC_Save_And_Then_Settings {
 
 		add_settings_field(
 			'fwc-save-and-then-actions',
-			_x('Actions to show', 'Used in settings page', 'improved-save-button'),
+			// translators: Used in settings page
+			_x('Actions to show', 'Used in settings page', 'really-improved-save-button'),
 			array( get_called_class(), 'create_setting_field' ),
 			self::MENU_SLUG,
 			$setting_section_name,
@@ -117,7 +124,8 @@ class FWC_Save_And_Then_Settings {
 
 		add_settings_field(
 			'fwc-save-and-then-default-action',
-			_x('Default action', 'Used in settings page', 'improved-save-button'),
+			// translators: Used in settings page
+			_x('Default action', 'Used in settings page', 'really-improved-save-button'),
 			array( get_called_class(), 'create_setting_field' ),
 			self::MENU_SLUG,
 			$setting_section_name,
@@ -131,8 +139,9 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function create_administration_menu() {
 		add_options_page(
-			sprintf( _x('%s Settings', 'Settings page <title>. %s = plugin name', 'improved-save-button'), FWC_Save_And_Then::get_localized_name() ),
-			__('Improved Save Button', 'improved-save-button'),
+			// translators: Settings page <title>. %s = plugin name
+			sprintf( _x('%s Settings', 'Settings page <title>. %s = plugin name', 'really-improved-save-button'), FWC_Save_And_Then::get_localized_name() ),
+			__('Improved Save Button', 'really-improved-save-button'),
 			'manage_options',
 			self::MENU_SLUG,
 			array( get_called_class(), 'create_options_page' )
@@ -144,7 +153,8 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function create_options_page() {
 		if ( ! current_user_can( 'manage_options' ) )  {
-			wp_die( _x( 'You do not have sufficient permissions to access this page.', 'Shown when trying to access the settings page without proper permissions.', 'improved-save-button' ) );
+			// translators: Shown when trying to access the settings page without proper permissions.
+			wp_die( _x( 'You do not have sufficient permissions to access this page.', 'Shown when trying to access the settings page without proper permissions.', 'really-improved-save-button' ) );
 		}
 		?>
 		<form method="post" action="options.php" data-fwc-sat-settings="form">
@@ -175,7 +185,7 @@ class FWC_Save_And_Then_Settings {
 						</div>
 					</div>
 				</div>
-				<button type="submit" class="risb-save-btn-fixed" aria-label="Save Changes"><?php echo esc_attr( _x('Save Changes', 'Settings page\'s save button', 'improved-save-button')); ?></button>
+				<button type="submit" class="risb-save-btn-fixed" aria-label="Save Changes"><?php echo esc_html( _x('Save Changes', 'Settings page\'s save button', 'really-improved-save-button')); ?></button>
 			</div>
 		</form>
 		<?php
@@ -243,7 +253,7 @@ class FWC_Save_And_Then_Settings {
 						if (strpos(strtolower($action_name), 'view') !== false && strpos(strtolower($action_name), 'popup') !== false) $icon = ' <span class="dashicons dashicons-external"></span>';
 					}
 					if ($action_id == $selected) {
-						$html .= $icon . ' ' . esc_html(strip_tags($action_name));
+						$html .= $icon . ' ' . esc_html(wp_strip_all_tags($action_name));
 					}
 					$action_index++;
 				} while( $action_index < count( $actions ) );
@@ -268,7 +278,7 @@ class FWC_Save_And_Then_Settings {
 						if (strpos(strtolower($action_name), 'view') !== false && strpos(strtolower($action_name), 'popup') !== false) $icon = ' <span class="dashicons dashicons-external"></span>';
 					}
 					$selected_class = ($action_id == $selected) ? 'selected' : '';
-					$html .= '<button type="button" class="risb-dropdown-action ' . esc_attr($selected_class) . '" data-value="' . esc_attr($action_id) . '" role="option">' . $icon . ' ' . esc_html(strip_tags($action_name)) . '</button>';
+					$html .= '<button type="button" class="risb-dropdown-action ' . esc_attr($selected_class) . '" data-value="' . esc_attr($action_id) . '" role="option">' . $icon . ' ' . esc_html(wp_strip_all_tags($action_name)) . '</button>';
 					$action_index++;
 				} while( $action_index < count( $actions ) );
 				$html .= '</div>';
@@ -276,14 +286,15 @@ class FWC_Save_And_Then_Settings {
 				$html .= '</div>';
 				break;
 		}
-		echo $html;
+		echo wp_kses_post($html);
 	}
 
 	/**
 	 * Creates the "Settings" link in the plugins page.
 	 */
 	static function plugin_settings_link( $links ) {
-		$settings_link = '<a href="options-general.php?page=' . self::MENU_SLUG . '">' . _x('Settings', 'Settings link for this plugin, in the plugins listing page.', 'improved-save-button') . '</a>'; 
+		// translators: Settings link for this plugin, in the plugins listing page.
+		$settings_link = '<a href="options-general.php?page=' . self::MENU_SLUG . '">' . _x('Settings', 'Settings link for this plugin, in the plugins listing page.', 'really-improved-save-button') . '</a>'; 
 		array_unshift( $links, $settings_link ); 
 		return $links; 
 	}

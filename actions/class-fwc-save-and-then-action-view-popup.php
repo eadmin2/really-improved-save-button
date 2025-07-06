@@ -102,7 +102,8 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 
 			popupWindow = window.open( '', '<?php echo esc_js( $js_window_name ); ?>' );
 			popupWindow.document.open();
-			popupWindow.document.write("<?php echo esc_js( _ex('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'improved-save-button') ); ?>");
+			// translators: Message shown in the new window when "Save and view (new window)" is used.
+			popupWindow.document.write("<?php echo esc_js( _ex('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'really-improved-save-button') ); ?>");
 			popupWindow.document.close();
 		});
 		</script>
@@ -111,14 +112,15 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 		$html = ob_get_contents();
 		ob_end_clean();
 
-		print $html;
+		echo wp_kses_post($html);
 	}
 
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */		
 	function get_name() {
-		return sprintf( _x('Save and View %s (new window)', 'Action name (used in settings page). %s = new window icon', 'improved-save-button'), self::HTML_ICON );
+		// translators: Action name (used in settings page). %s = new window icon
+		return sprintf( _x('Save and View %s (new window)', 'Action name (used in settings page). %s = new window icon', 'really-improved-save-button'), self::HTML_ICON );
 	}
 
 	/**
@@ -132,15 +134,17 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */	
 	function get_description() {
-		return _x('Shows the <strong>post itself in a new window</strong> after save.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('Shows the <strong>post itself in a new window</strong> after save.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */	
 	function get_button_label_pattern( $post ) {
+		// translators: Button label (used in post edit page). %%s = "Publish" or "Update"; %s = new window icon
 		// The first %s must be escaped, because it is not replaced by this sprintf
-		return sprintf( _x('%%s and View %s', 'Button label (used in post edit page). %%s = "Publish" or "Update"; %s = new window icon', 'improved-save-button'), self::HTML_ICON );
+		return sprintf( _x('%%s and View %s', 'Button label (used in post edit page). %%s = "Publish" or "Update"; %s = new window icon', 'really-improved-save-button'), self::HTML_ICON );
 	}
 
 	/**
@@ -151,7 +155,8 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	 * @param WP_Post $post
 	 */	
 	function get_button_title( $post ) {
-		return _x('The post will be shown in a new window.', 'Button title attribute (used in post edit page)', 'improved-save-button');
+		// translators: Button title attribute (used in post edit page)
+		return _x('The post will be shown in a new window.', 'Button title attribute (used in post edit page)', 'really-improved-save-button');
 	}
 
 	/**
@@ -165,7 +170,7 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	 */
 	function get_redirect_url( $current_url, $post ) {
 		$url = get_permalink( $post );
-		error_log('[SaveAndThen] Save and View Popup get_redirect_url called. Redirecting to: ' . $url);
+		// error_log('[SaveAndThen] Save and View Popup get_redirect_url called. Redirecting to: ' . $url);
 		return $url;
 	}
 }

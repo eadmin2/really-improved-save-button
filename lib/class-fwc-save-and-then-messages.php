@@ -120,7 +120,7 @@ class FWC_Save_And_Then_Messages {
 
 				// We update the published date
 				if( 9 == $code ) {
-					$date_format = _x('M j, Y @ H:i', 'Date format used to find and replace the date in success message for scheduled posts. Important: translate with *exactly* the official Wordpress translation for this string.', 'improved-save-button');
+					$date_format = _x('M j, Y @ H:i', 'Date format used to find and replace the date in success message for scheduled posts. Important: translate with *exactly* the official Wordpress translation for this string.', 'really-improved-save-button');
 					$previous_post = get_post( $previous_post_ID );
 					$current_date = date_i18n( $date_format, strtotime( $current_post->post_date ) );
 					$previous_date = date_i18n( $date_format, strtotime( $previous_post->post_date ) );

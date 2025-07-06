@@ -51,14 +51,14 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	function save_referer( $wp_screen ) {
 		if( $wp_screen->base == 'post' ) {
 			// Only execute this function in GET
-			if( ! isset($_SERVER['REQUEST_METHOD']) || strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET' ) {
+			if( ! isset($_SERVER['REQUEST_METHOD']) || strtoupper(wp_unslash($_SERVER['REQUEST_METHOD'])) !== 'GET' ) {
 				return;
 			}
 
 			$referer_url = '';
 
 			if( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				$referer_url = esc_url_raw( $_SERVER['HTTP_REFERER'] );
+				$referer_url = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
 			}
 
 			// If the referer is also the same as this post 
@@ -74,6 +74,10 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 			if( ! $is_same_url ) {
 				setcookie( self::COOKIE_REFERER_URL, $referer_url );
 			}
+			// Output nonce field for return action
+			add_action('edit_form_after_title', function() {
+				wp_nonce_field('fwc_sat_return_action', '_fwc_sat_return_nonce');
+			});
 		}
 	}
 	
@@ -81,7 +85,8 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_name() {
-		return _x('Save and Return', 'Action name (used in settings page)', 'improved-save-button');
+		// translators: Action name (used in settings page)
+		return _x('Save and Return', 'Action name (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
@@ -95,14 +100,16 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_description() {
-		return _x('Returns to the <strong>previous page</strong> (no matter which page) after save.', 'Action description (used in settings page)', 'improved-save-button');
+		// translators: Action description (used in settings page)
+		return _x('Returns to the <strong>previous page</strong> (no matter which page) after save.', 'Action description (used in settings page)', 'really-improved-save-button');
 	}
 	
 	/**
 	 * @see FWC_Save_And_Then_Action
 	 */
 	function get_button_label_pattern( $post ) {
-		return _x('%s and Return', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'improved-save-button');
+		// translators: Button label (used in post edit page). %s = "Publish" or "Update"
+		return _x('%s and Return', 'Button label (used in post edit page). %s = "Publish" or "Update"', 'really-improved-save-button');
 	}
 
 	/**
@@ -116,8 +123,10 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	 * @return string
 	 */
 	function get_redirect_url( $current_url, $post ) {
-		$referer = isset( $_REQUEST['_fwc-sat_return_referer'] ) ? esc_url_raw( $_REQUEST['_fwc-sat_return_referer'] ) : '';
-		error_log('[SaveAndThen] Save and Return get_redirect_url called. Redirecting to: ' . $referer);
+		if ( ! isset( $_REQUEST['_fwc_sat_return_nonce'] ) || ! wp_verify_nonce( $_REQUEST['_fwc_sat_return_nonce'], 'fwc_sat_return_action' ) ) {
+			return $current_url;
+		}
+		$referer = isset( $_REQUEST['_fwc-sat_return_referer'] ) ? esc_url_raw( wp_unslash( $_REQUEST['_fwc-sat_return_referer'] ) ) : '';
 		return $referer;
 	}
 }
