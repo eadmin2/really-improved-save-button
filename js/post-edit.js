@@ -192,17 +192,15 @@ window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};
                 self = this;
 
             $.each(this.config.actions, function(i, actionData) {
+                if (!actionData.enabled) return; // Only add enabled actions
+
                 var $item = $('<li data-fwc-sat-value="' + actionData.id + '">' + self.generateButtonLabel(actionData.buttonLabelPattern) + '</li>');
 
                 if (actionData.title) {
                     $item.attr('title', actionData.title);
                 }
 
-                if (actionData.enabled) {
-                    $item.data('fwcSatActionData', actionData);
-                } else {
-                    $item.addClass('disabled');
-                }
+                $item.data('fwcSatActionData', actionData);
 
                 $dropdownMenu.append($item);
             });

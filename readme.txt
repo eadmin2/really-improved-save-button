@@ -3,8 +3,8 @@ Contributors: FastWebCreations LLC
 Tags: save, publish, edit, duplicate, list
 Requires at least: 5.0
 Tested up to: 6.8.1
-Stable tag: 1.0.0
-Version: 1.0.0
+Stable tag: 1.0.1
+Version: 1.0.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

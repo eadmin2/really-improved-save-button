@@ -83,7 +83,7 @@ const goToNextOrPrevious = async (direction) => {
 
 const actions = [
     {
-        id: 'new',
+        id: 'fastwebcreations.new',
         label: __('Save and New', 'improved-save-button'),
         onClick: () => savePostAnd(() => {
             const postType = getCurrentPostType();
@@ -92,12 +92,12 @@ const actions = [
         }),
     },
     {
-        id: 'duplicate',
+        id: 'fastwebcreations.duplicate',
         label: __('Save and Duplicate', 'improved-save-button'),
         onClick: () => savePostAnd(duplicatePost),
     },
     {
-        id: 'list',
+        id: 'fastwebcreations.list',
         label: __('Save and List', 'improved-save-button'),
         onClick: () => savePostAnd(() => {
             const postType = getCurrentPostType();
@@ -105,7 +105,7 @@ const actions = [
         }),
     },
     {
-        id: 'return',
+        id: 'fastwebcreations.return',
         label: __('Save and Return', 'improved-save-button'),
         onClick: () => savePostAnd(() => {
             if (document.referrer) {
@@ -116,17 +116,17 @@ const actions = [
         }),
     },
     {
-        id: 'next',
+        id: 'fastwebcreations.next',
         label: __('Save and Next', 'improved-save-button'),
         onClick: () => savePostAnd(() => goToNextOrPrevious('next')),
     },
     {
-        id: 'previous',
+        id: 'fastwebcreations.previous',
         label: __('Save and Previous', 'improved-save-button'),
         onClick: () => savePostAnd(() => goToNextOrPrevious('previous')),
     },
     {
-        id: 'view',
+        id: 'fastwebcreations.view',
         label: __('Save and View', 'improved-save-button'),
         onClick: () => savePostAnd(() => {
             const permalink = select('core/editor').getPermalink();
@@ -138,7 +138,7 @@ const actions = [
         }),
     },
     {
-        id: 'view-popup',
+        id: 'fastwebcreations.viewPopup',
         label: __('Save and View (Popup)', 'improved-save-button'),
         onClick: () => savePostAnd(() => {
             const permalink = select('core/editor').getPermalink();
@@ -151,9 +151,16 @@ const actions = [
     },
 ];
 
+// Get enabled action IDs from backend config
+const enabledActionIds = (window.FastWebCreations?.SaveAndThen?.config?.actions || [])
+    .filter(a => a.enabled)
+    .map(a => a.id);
+
+const filteredActions = actions.filter(action => enabledActionIds.includes(action.id));
+
 const SaveAndThenPanel = () => (
     <PanelBody title={__('Save and Then Actions', 'improved-save-button')} initialOpen={true}>
-        {actions.map((action) => (
+        {filteredActions.map((action) => (
             <Button
                 key={action.id}
                 isPrimary
@@ -186,7 +193,7 @@ const SaveAndThenDropdownButton = () => (
         )}
         renderContent={() => (
             <div style={{ minWidth: 220, padding: 0 }}>
-                {actions.map((action) => (
+                {filteredActions.map((action) => (
                     <Button
                         key={action.id}
                         isPrimary

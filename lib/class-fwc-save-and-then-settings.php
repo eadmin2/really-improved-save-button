@@ -68,13 +68,21 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function add_admin_scripts( $page_id ) {
 		if ( $page_id === 'settings_page_' . self::MENU_SLUG ) {
-			$plugin_version = '1.0.0'; // Update this if you bump the plugin version
-			$css_file = dirname(__FILE__) . '/../css/post-edit.css';
-			$js_file = dirname(__FILE__) . '/../js/settings-page.js';
+			$plugin_version = '1.0.0';
+			$css_file = dirname(__FILE__) . '/../admin-style.css';
 			$css_version = file_exists($css_file) ? filemtime($css_file) : $plugin_version;
-			$js_version = file_exists($js_file) ? filemtime($js_file) : $plugin_version;
-			wp_enqueue_style('risb-modern-settings', plugins_url('../css/post-edit.css', __FILE__), [], $css_version);
-			wp_enqueue_script('risb-modern-settings', plugins_url('../js/settings-page.js', __FILE__), [], $js_version, true);
+			wp_enqueue_style('risb-admin-style', plugins_url('../admin-style.css', __FILE__), [], $css_version);
+
+            // Enqueue the settings page JS for toggle and dropdown interactivity
+            $js_file = dirname(__FILE__) . '/../js/settings-page.js';
+            $js_version = file_exists($js_file) ? filemtime($js_file) : $plugin_version;
+            wp_enqueue_script(
+                'risb-settings-page',
+                plugins_url('../js/settings-page.js', __FILE__),
+                array('jquery'),
+                $js_version,
+                true
+            );
 		}
 	}
 
@@ -139,9 +147,10 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function create_administration_menu() {
 		add_options_page(
-			// translators: Settings page <title>. %s = plugin name
-			sprintf( _x('%s Settings', 'Settings page <title>. %s = plugin name', 'really-improved-save-button'), FWC_Save_And_Then::get_localized_name() ),
-			__('Improved Save Button', 'really-improved-save-button'),
+			// Page title
+			__('Really Improved Save Button Settings', 'really-improved-save-button'),
+			// Menu title
+			__('Really Improved Save Button', 'really-improved-save-button'),
 			'manage_options',
 			self::MENU_SLUG,
 			array( get_called_class(), 'create_options_page' )
@@ -157,37 +166,14 @@ class FWC_Save_And_Then_Settings {
 			wp_die( _x( 'You do not have sufficient permissions to access this page.', 'Shown when trying to access the settings page without proper permissions.', 'really-improved-save-button' ) );
 		}
 		?>
+		<div class="wrap">
+		<h1><?php printf( _x('<em>%s</em> Settings', 'Settings page main title. %s = plugin name', 'really-improved-save-button'), 'Really Improved Save Button' ); ?></h1>
 		<form method="post" action="options.php" data-fwc-sat-settings="form">
-			<?php
-			settings_fields( self::OPTION_GROUP );
-			?>
-			<div class="risb-settings-wrap">
-				<div class="risb-col">
-					<div class="risb-card">
-						<div class="risb-card-title" style="margin-bottom: 8px;">Display button as default</div>
-						<div class="risb-row" style="padding: 16px 20px;">
-							<div class="risb-label">Display the new save button as the default one.</div>
-							<?php self::create_setting_field(['option_name'=>'set-as-default']); ?>
-						</div>
-					</div>
-					<div class="risb-card">
-						<div class="risb-card-title" style="margin-bottom: 8px;">Default action</div>
-						<div style="padding: 16px 20px;">
-							<?php self::create_setting_field(['option_name'=>'default-action']); ?>
-						</div>
-					</div>
-				</div>
-				<div class="risb-col">
-					<div class="risb-card">
-						<div class="risb-card-title" style="margin-bottom: 8px;">Available Save Actions</div>
-						<div class="risb-actions-grid">
-							<?php self::create_setting_field(['option_name'=>'actions']); ?>
-						</div>
-					</div>
-				</div>
-				<button type="submit" class="risb-save-btn-fixed" aria-label="Save Changes"><?php echo esc_html( _x('Save Changes', 'Settings page\'s save button', 'really-improved-save-button')); ?></button>
-			</div>
+			<?php settings_fields( self::OPTION_GROUP ); ?>
+			<?php do_settings_sections( self::MENU_SLUG ); ?>
+			<input type="submit" value="<?php echo esc_attr( _x('Save Changes', 'Settings page\'s save button', 'really-improved-save-button')); ?>" class="button button-primary" />
 		</form>
+		</div>
 		<?php
 	}
 
@@ -200,93 +186,57 @@ class FWC_Save_And_Then_Settings {
 	static function create_setting_field( $args ) {
 		$options = self::get_options();
 		$actions = FWC_Save_And_Then_Actions::get_actions();
-		$option_field_name = self::MAIN_SETTING_NAME . '[' . esc_attr($args['option_name']) . ']';
+		$option_field_name = self::MAIN_SETTING_NAME . '[' . $args['option_name'] . ']';
 		$option_value = $options[ $args['option_name'] ];
 		$html = '';
 		switch ( $args['option_name'] ) {
 			case 'set-as-default':
-				$html .= '<label class="risb-toggle">';
-				$html .= '<input type="checkbox" name="' . esc_attr($option_field_name). '" value="1"' . checked( 1, $option_value, false ) . '/>';
-				$html .= '<span class="risb-toggle-slider"></span>';
-				$html .= '</label>';
+				$html .= '<fieldset><label><input type="checkbox" name="' . $option_field_name. '" value="1"' . checked( 1, $option_value, false ) . '/>';
+				$html .= '<span>' . _x('Display the new save button as the default one.', 'Used in settings page', 'really-improved-save-button') . '</span></label></fieldset>';
 				break;
 			case 'actions':
+				$html .= '<fieldset>';
 				foreach ( $actions as $action_index => $action ) {
 					$action_id = $action->get_id();
-					$icon = '';
-					if (strpos(strtolower($action->get_name()), 'duplicate') !== false) $icon = ' <span style="font-size:1.1em;">&#x2795;</span>';
-					if (strpos(strtolower($action->get_name()), 'new') !== false) $icon = ' <span style="font-size:1.1em;">&#x2714;</span>';
-					if (strpos(strtolower($action->get_name()), 'return') !== false) $icon = ' <span style="font-size:1.1em;">&#x21bb;</span>';
-					if (strpos(strtolower($action->get_name()), 'view') !== false && strpos(strtolower($action->get_name()), 'popup') !== false) $icon = ' <span class="dashicons dashicons-external"></span>';
-					$html .= '<div class="risb-row">';
-					$html .= '<div class="risb-label">' . esc_html($action->get_name()) . $icon . '</div>';
-					$html .= '<label class="risb-toggle">';
-					$html .= '<input type="checkbox" name="' . esc_attr($option_field_name) . '['. esc_attr($action_id) .']" value="1" data-fwc-sat-settings="action" data-fwc-sat-settings-value="'. esc_attr($action_id) .'" ' . checked( 1, $option_value[ $action_id ], false ) . '/>';
-					$html .= '<span class="risb-toggle-slider"></span>';
-					$html .= '</label>';
-					$html .= '</div>';
+					$html .= '<label><input type="checkbox" name="' . $option_field_name . '['. $action_id .']" value="1" data-fwc-sat-settings="action" data-fwc-sat-settings-value="'. $action_id .'" ' . checked( 1, $option_value[ $action_id ], false ) . '/>';
+					$html .= '<span>' . $action->get_name() . '</span>';
 					if( $action->get_description() ) {
-						$html .= '<div class="risb-desc">' . wp_kses_post($action->get_description()) . '</div>';
+						$html .= ' <span class="description"> — ' . $action->get_description() . '</span>';
+					}
+					$html .= '</label>';
+					if( $action_index != count( $actions ) - 1 ) {
+						$html .= '<br />';
 					}
 				}
+				$html .= '</fieldset>';
 				break;
 			case 'default-action':
-				$selected = $option_value;
-				$html .= '<div class="risb-dropdown" id="risb-default-action-dropdown">';
-				$html .= '<button type="button" class="risb-dropdown-toggle" id="risb-dropdown-toggle" aria-haspopup="listbox" aria-expanded="false">';
-				$html .= '<span id="risb-dropdown-selected-label">';
-				// Show selected label and icon
+				$html .= '<fieldset>';
 				$action_index = -1;
 				do {
 					if ( -1 == $action_index ) {
 						$action_id = FWC_Save_And_Then_Actions::ACTION_LAST;
 						$action_name = '<em>Last used</em>';
-						$icon = '<span style="font-size:1.1em;opacity:0.7;">&#x21ba;</span>';
+						$action_description = 'The last action that was used.';
 					} else {
+						$html .= '<br />';
 						$action = $actions[ $action_index ];
 						$action_id = $action->get_id();
 						$action_name = $action->get_name();
-						$icon = '';
-						if (strpos(strtolower($action_name), 'duplicate') !== false) $icon = ' <span style="font-size:1.1em;">&#x2795;</span>';
-						if (strpos(strtolower($action_name), 'new') !== false) $icon = ' <span style="font-size:1.1em;">&#x2714;</span>';
-						if (strpos(strtolower($action_name), 'return') !== false) $icon = ' <span style="font-size:1.1em;">&#x21bb;</span>';
-						if (strpos(strtolower($action_name), 'view') !== false && strpos(strtolower($action_name), 'popup') !== false) $icon = ' <span class="dashicons dashicons-external"></span>';
+						$action_description = '';
 					}
-					if ($action_id == $selected) {
-						$html .= $icon . ' ' . esc_html(wp_strip_all_tags($action_name));
+					$html .= '<label><input type="radio" name="' . $option_field_name . '" value="'. $action_id .'" data-fwc-sat-settings="default"' . checked( $action_id, $option_value, false ) . '/>';
+					$html .= '<span>' . $action_name . '</span>';
+					if( $action_description ) {
+						$html .= ' <span class="description"> — ' . $action_description . '</span>';
 					}
+					$html .= '</label>';
 					$action_index++;
 				} while( $action_index < count( $actions ) );
-				$html .= '</span>';
-				$html .= '<span style="margin-left:8px;font-size:1.2em;opacity:0.6;">&#9660;</span>';
-				$html .= '</button>';
-				$html .= '<div class="risb-dropdown-menu" id="risb-dropdown-menu" style="display:none;" role="listbox">';
-				$action_index = -1;
-				do {
-					if ( -1 == $action_index ) {
-						$action_id = FWC_Save_And_Then_Actions::ACTION_LAST;
-						$action_name = '<em>Last used</em>';
-						$icon = '<span style="font-size:1.1em;opacity:0.7;">&#x21ba;</span>';
-					} else {
-						$action = $actions[ $action_index ];
-						$action_id = $action->get_id();
-						$action_name = $action->get_name();
-						$icon = '';
-						if (strpos(strtolower($action_name), 'duplicate') !== false) $icon = ' <span style="font-size:1.1em;">&#x2795;</span>';
-						if (strpos(strtolower($action_name), 'new') !== false) $icon = ' <span style="font-size:1.1em;">&#x2714;</span>';
-						if (strpos(strtolower($action_name), 'return') !== false) $icon = ' <span style="font-size:1.1em;">&#x21bb;</span>';
-						if (strpos(strtolower($action_name), 'view') !== false && strpos(strtolower($action_name), 'popup') !== false) $icon = ' <span class="dashicons dashicons-external"></span>';
-					}
-					$selected_class = ($action_id == $selected) ? 'selected' : '';
-					$html .= '<button type="button" class="risb-dropdown-action ' . esc_attr($selected_class) . '" data-value="' . esc_attr($action_id) . '" role="option">' . $icon . ' ' . esc_html(wp_strip_all_tags($action_name)) . '</button>';
-					$action_index++;
-				} while( $action_index < count( $actions ) );
-				$html .= '</div>';
-				$html .= '<input type="hidden" name="' . esc_attr($option_field_name) . '" id="risb-default-action-input" value="' . esc_attr($selected) . '" />';
-				$html .= '</div>';
+				$html .= '</fieldset>';
 				break;
 		}
-		echo wp_kses_post($html);
+		echo $html;
 	}
 
 	/**
@@ -415,7 +365,12 @@ class FWC_Save_And_Then_Settings {
 	 * @return array
 	 */
 	static function merge_options_with_default( $options = array() ) {
-		return array_replace_recursive( self::get_default_options(), $options );
+		$defaults = self::get_default_options();
+		error_log('FWC Debug - merge_options_with_default input: ' . print_r($options, true));
+		error_log('FWC Debug - merge_options_with_default defaults: ' . print_r($defaults, true));
+		$merged = array_replace_recursive( $defaults, $options );
+		error_log('FWC Debug - merge_options_with_default result: ' . print_r($merged, true));
+		return $merged;
 	}
 
 	/**
@@ -436,7 +391,7 @@ class FWC_Save_And_Then_Settings {
 			}
 		}
 
-		// Each action must exist
+		// Each action must exist and be properly boolean
 		if ( isset( $options['actions'] ) ) {
 			if ( ! is_array( $options['actions'] ) ) {
 				unset( $options['actions'] );
@@ -447,7 +402,10 @@ class FWC_Save_And_Then_Settings {
 						continue;
 					}
 
-					$options['actions'][$action_id] = (bool) $options['actions'][$action_id];
+					// Convert empty strings and other falsy values to proper boolean false
+					// Only '1' or true should be considered enabled
+					$converted_value = !empty($action_enabled) && $action_enabled !== '0';
+					$options['actions'][$action_id] = $converted_value;
 				}
 			}
 		}
@@ -464,17 +422,23 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function get_enabled_actions() {
 		$options = self::get_options();
+		error_log('FWC Debug - get_enabled_actions options: ' . print_r($options, true));
 		$active_actions = array();
 
 		if( isset( $options['actions'] ) ) {
 			foreach ( $options['actions'] as $action_id => $action_enabled ) {
+				error_log('FWC Debug - Checking action: ' . $action_id . ' = "' . $action_enabled . '" (type: ' . gettype($action_enabled) . ')');
 				$action = FWC_Save_And_Then_Actions::get_action( $action_id );
 				if( ! is_null( $action ) && $action_enabled ) {
 					$active_actions[ $action_id ] = $action;
+					error_log('FWC Debug - Action ' . $action_id . ' is ENABLED');
+				} else {
+					error_log('FWC Debug - Action ' . $action_id . ' is DISABLED');
 				}
 			}
 		}
 
+		error_log('FWC Debug - Final active_actions: ' . print_r(array_keys($active_actions), true));
 		return $active_actions;
 	}
 

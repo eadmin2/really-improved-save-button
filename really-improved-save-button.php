@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 Plugin Name: Really Improved Save Button
 Description: Adds a new "Save" button to the Post Edit screen that saves the post and immediately takes you to your next action: the previous page, the next/previous post, the posts list, the post's frontend, etc.
 Author: FastWebCreations LLC
-Version: 1.0.0
+Version: 1.0.1
 Author URI: http://www.fastwebcreations.com
 Domain Path: /
 Text Domain: really-improved-save-button
