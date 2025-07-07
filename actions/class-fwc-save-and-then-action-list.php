@@ -118,7 +118,6 @@ class FWC_Save_And_Then_Action_List extends FWC_Save_And_Then_Action {
 		}
 		$params[ FWC_Save_And_Then_Messages::HTTP_PARAM_UPDATED_POST_ID ] = $post->ID;
 		$redirect_url = FWC_Save_And_Then_Utils::admin_url( 'edit.php', $params );
-		// error_log('[SaveAndThen] Save and List get_redirect_url called. Redirecting to: ' . $redirect_url);
 		return $redirect_url;
 	}
 }

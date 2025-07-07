@@ -366,10 +366,7 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function merge_options_with_default( $options = array() ) {
 		$defaults = self::get_default_options();
-		error_log('FWC Debug - merge_options_with_default input: ' . print_r($options, true));
-		error_log('FWC Debug - merge_options_with_default defaults: ' . print_r($defaults, true));
 		$merged = array_replace_recursive( $defaults, $options );
-		error_log('FWC Debug - merge_options_with_default result: ' . print_r($merged, true));
 		return $merged;
 	}
 
@@ -422,23 +419,17 @@ class FWC_Save_And_Then_Settings {
 	 */
 	static function get_enabled_actions() {
 		$options = self::get_options();
-		error_log('FWC Debug - get_enabled_actions options: ' . print_r($options, true));
 		$active_actions = array();
 
 		if( isset( $options['actions'] ) ) {
 			foreach ( $options['actions'] as $action_id => $action_enabled ) {
-				error_log('FWC Debug - Checking action: ' . $action_id . ' = "' . $action_enabled . '" (type: ' . gettype($action_enabled) . ')');
 				$action = FWC_Save_And_Then_Actions::get_action( $action_id );
 				if( ! is_null( $action ) && $action_enabled ) {
 					$active_actions[ $action_id ] = $action;
-					error_log('FWC Debug - Action ' . $action_id . ' is ENABLED');
-				} else {
-					error_log('FWC Debug - Action ' . $action_id . ' is DISABLED');
 				}
 			}
 		}
 
-		error_log('FWC Debug - Final active_actions: ' . print_r(array_keys($active_actions), true));
 		return $active_actions;
 	}
 

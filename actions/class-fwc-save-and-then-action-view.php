@@ -80,7 +80,6 @@ class FWC_Save_And_Then_Action_View extends FWC_Save_And_Then_Action {
 	 */
 	function get_redirect_url( $current_url, $post ) {
 		$url = get_permalink( $post );
-		// error_log('[SaveAndThen] Save and View get_redirect_url called. Redirecting to: ' . $url);
 		return $url;
 	}
 }

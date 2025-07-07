@@ -104,7 +104,6 @@ class FWC_Save_And_Then_Action_Next extends FWC_Save_And_Then_Action {
 	function get_redirect_url( $current_url, $post ) {
 		$next_post = FWC_Save_And_Then_Utils::get_adjacent_post( $post, 'next' );
 		$url = $next_post ? get_edit_post_link( $next_post->ID, 'url' ) : '';
-		// error_log('[SaveAndThen] Save and Next get_redirect_url called. Redirecting to: ' . $url);
 		return $url;
 	}
 }

@@ -1,1 +1,35 @@
-.fwc-sat-separator{height:10px}@media screen and (max-width: 782px){.fwc-sat-separator{height:0}}#publishing-action .fwc-sat-spinner{visibility:hidden;display:inline-block;float:none}#publishing-action .fwc-sat-spinner.is-active{visibility:visible}.fwc-sat-container{position:relative;white-space:nowrap;display:inline-block}.fwc-sat-container.fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-menu{display:block}.fwc-sat-main-button{vertical-align:top}.wp-core-ui .fwc-sat-with-dropdown .fwc-sat-main-button.button{-webkit-border-bottom-right-radius:0;border-bottom-right-radius:0;-webkit-border-top-right-radius:0;border-top-right-radius:0;border-right-style:none}.wp-core-ui .fwc-sat-with-dropdown .fwc-sat-main-button.button.button-large{padding-right:8px}.fwc-sat-main-button .dashicons{vertical-align:text-bottom}.wp-core-ui .fwc-sat-dropdown-button.button{-webkit-border-bottom-left-radius:0;border-bottom-left-radius:0;-webkit-border-top-left-radius:0;border-top-left-radius:0;border-left-style:none;font:400 18px/1 dashicons;speak:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.wp-core-ui .fwc-sat-dropdown-button.button.button-large{padding:0 6px 0 4px}@media screen and (max-width: 782px){.wp-core-ui .fwc-sat-dropdown-button.button.button-large{padding-top:6px;padding-bottom:6px}}@media screen and (max-width: 782px){.wp-core-ui .fwc-sat-dropdown-button.button{font-size:19px}}.wp-core-ui .fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-button.button{background-color:#eee;border-color:#999;-webkit-box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.5);box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.5)}.wp-core-ui .fwc-sat-dropdown-menu-shown.fwc-sat-set-as-default .fwc-sat-dropdown-button.button{background-color:#1b7aa6;border-color:#005684;-webkit-box-shadow:inset 0 1px 0 rgba(0,0,0,.1);box-shadow:inset 0 1px 0 rgba(0,0,0,.1)}.fwc-sat-dropdown-menu{display:none;position:absolute;z-index:1000;background:#fff;border:1px solid #ccc;min-width:180px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-top:2px;padding:0;list-style:none}.fwc-sat-container.fwc-sat-with-dropdown{position:relative}.fwc-sat-container.fwc-sat-with-dropdown.fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-menu{display:block}.fwc-sat-dropdown-menu li{cursor:pointer;margin:0;padding:8px 16px;white-space:nowrap;transition:background .2s,color .2s}.fwc-sat-dropdown-menu li:hover{background:#1e8cbe;color:#fff}.fwc-sat-dropdown-menu li.disabled{opacity:.5;cursor:default;background:none;color:#888}/*# sourceMappingURL=post-edit.css.map */
+/* Add CSS variables for light and dark mode */
+:root {
+  --sat-bg: #fff;
+  --sat-border: #ccc;
+  --sat-border-active: #999;
+  --sat-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --sat-shadow-inset: inset 0 2px 5px -3px rgba(0,0,0,0.5);
+  --sat-shadow-inset-active: inset 0 1px 0 rgba(0,0,0,0.1);
+  --sat-menu-hover-bg: #1e8cbe;
+  --sat-menu-hover-text: #fff;
+  --sat-menu-disabled-text: #888;
+  --sat-dropdown-btn-bg: #eee;
+  --sat-dropdown-btn-border: #999;
+  --sat-dropdown-btn-bg-active: #1b7aa6;
+  --sat-dropdown-btn-border-active: #005684;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sat-bg: #232329;
+    --sat-border: #35363A;
+    --sat-border-active: #888;
+    --sat-shadow: 0 2px 8px rgba(0,0,0,0.32);
+    --sat-shadow-inset: inset 0 2px 5px -3px rgba(0,0,0,0.7);
+    --sat-shadow-inset-active: inset 0 1px 0 rgba(255,255,255,0.08);
+    --sat-menu-hover-bg: #3385ff;
+    --sat-menu-hover-text: #fff;
+    --sat-menu-disabled-text: #aaa;
+    --sat-dropdown-btn-bg: #35363A;
+    --sat-dropdown-btn-border: #888;
+    --sat-dropdown-btn-bg-active: #0A84FF;
+    --sat-dropdown-btn-border-active: #3385ff;
+  }
+}
+
+.fwc-sat-separator{height:10px}@media screen and (max-width: 782px){.fwc-sat-separator{height:0}}#publishing-action .fwc-sat-spinner{visibility:hidden;display:inline-block;float:none}#publishing-action .fwc-sat-spinner.is-active{visibility:visible}.fwc-sat-container{position:relative;white-space:nowrap;display:inline-block}.fwc-sat-container.fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-menu{display:block}.fwc-sat-main-button{vertical-align:top}.wp-core-ui .fwc-sat-with-dropdown .fwc-sat-main-button.button{-webkit-border-bottom-right-radius:0;border-bottom-right-radius:0;-webkit-border-top-right-radius:0;border-top-right-radius:0;border-right-style:none}.wp-core-ui .fwc-sat-with-dropdown .fwc-sat-main-button.button.button-large{padding-right:8px}.fwc-sat-main-button .dashicons{vertical-align:text-bottom}.wp-core-ui .fwc-sat-dropdown-button.button{-webkit-border-bottom-left-radius:0;border-bottom-left-radius:0;-webkit-border-top-left-radius:0;border-top-left-radius:0;border-left-style:none;font:400 18px/1 dashicons;speak:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.wp-core-ui .fwc-sat-dropdown-button.button.button-large{padding:0 6px 0 4px}@media screen and (max-width: 782px){.wp-core-ui .fwc-sat-dropdown-button.button.button-large{padding-top:6px;padding-bottom:6px}}@media screen and (max-width: 782px){.wp-core-ui .fwc-sat-dropdown-button.button{font-size:19px}}.wp-core-ui .fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-button.button{background-color:var(--sat-dropdown-btn-bg);border-color:var(--sat-dropdown-btn-border);-webkit-box-shadow:var(--sat-shadow-inset);box-shadow:var(--sat-shadow-inset)}.wp-core-ui .fwc-sat-dropdown-menu-shown.fwc-sat-set-as-default .fwc-sat-dropdown-button.button{background-color:var(--sat-dropdown-btn-bg-active);border-color:var(--sat-dropdown-btn-border-active);-webkit-box-shadow:var(--sat-shadow-inset-active);box-shadow:var(--sat-shadow-inset-active)}.fwc-sat-dropdown-menu{display:none;position:absolute;z-index:1000;background:var(--sat-bg);border:1px solid var(--sat-border);min-width:180px;box-shadow:var(--sat-shadow);margin-top:2px;padding:0;list-style:none}.fwc-sat-container.fwc-sat-with-dropdown{position:relative}.fwc-sat-container.fwc-sat-with-dropdown.fwc-sat-dropdown-menu-shown .fwc-sat-dropdown-menu{display:block}.fwc-sat-dropdown-menu li{cursor:pointer;margin:0;padding:8px 16px;white-space:nowrap;transition:background .2s,color .2s}.fwc-sat-dropdown-menu li:hover{background:var(--sat-menu-hover-bg);color:var(--sat-menu-hover-text)}.fwc-sat-dropdown-menu li.disabled{opacity:.5;cursor:default;background:none;color:var(--sat-menu-disabled-text)}/*# sourceMappingURL=post-edit.css.map */

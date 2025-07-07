@@ -123,23 +123,17 @@ class FWC_Save_And_Then_Post_Edit {
 	static function post_submitbox_start() {
 		// Prevent duplicate execution
 		if( did_action('fwc_sat_config_output') ) {
-			error_log('FWC Debug - post_submitbox_start called but config already output, skipping');
 			return;
 		}
-		
-		error_log('FWC Debug - post_submitbox_start START');
 		
 		$options = FWC_Save_And_Then_Settings::get_options();
 		$enabled_actions = FWC_Save_And_Then_Settings::get_enabled_actions();
 		$current_post = get_post();
 
 		if( ! count( $enabled_actions ) ) {
-			error_log('FWC Debug - No enabled actions, exiting');
 			do_action('fwc_sat_config_output');
 			return;
 		}
-
-		error_log('FWC Debug - Building JS config with ' . count($enabled_actions) . ' enabled actions');
 
 		$js_object = array(
 			'setAsDefault' => $options['set-as-default'],
@@ -159,23 +153,17 @@ class FWC_Save_And_Then_Post_Edit {
 			}
 			
 			$js_object['actions'][] = $new_js_action;
-			error_log('FWC Debug - Added action to JS config: ' . $action->get_id());
 		}
-		
-		error_log('FWC Debug - Final JS config has ' . count($js_object['actions']) . ' actions: ' . implode(', ', array_map(function($a) { return $a['id']; }, $js_object['actions'])));
 		
 		$timestamp = time();
 		
 		// Output JS config
 		echo '<script type="text/javascript">';
-		echo 'console.log("[FWC Debug ' . $timestamp . '] Outputting config with " + ' . count($js_object['actions']) . ' + " actions");';
 		echo 'window.FastWebCreations = window.FastWebCreations || {};';
 		echo 'window.FastWebCreations.SaveAndThen = window.FastWebCreations.SaveAndThen || {};';
 		echo 'window.FastWebCreations.SaveAndThen.ACTION_LAST_ID = "' . esc_js( FWC_Save_And_Then_Actions::ACTION_LAST ) . '";';
 		echo 'window.FastWebCreations.SaveAndThen.HTTP_PARAM_ACTION = "' . esc_js( self::HTTP_PARAM_ACTION ) . '";';
 		echo 'window.FastWebCreations.SaveAndThen.config = ' . wp_json_encode( $js_object ) . ';';
-		echo 'console.log("[FWC Debug ' . $timestamp . '] Config set:", window.FastWebCreations.SaveAndThen.config);';
-		echo 'console.log("[FWC Debug ' . $timestamp . '] Number of actions:", window.FastWebCreations.SaveAndThen.config.actions.length);';
 		echo '</script>';
 		
 		// Output nonce field for save-and-then action
@@ -183,8 +171,6 @@ class FWC_Save_And_Then_Post_Edit {
 		
 		// Mark that we've output the config
 		do_action('fwc_sat_config_output');
-		
-		error_log('FWC Debug - post_submitbox_start END');
 	}
 } // end class
 
