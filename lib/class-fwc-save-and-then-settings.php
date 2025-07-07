@@ -163,11 +163,13 @@ class FWC_Save_And_Then_Settings {
 	static function create_options_page() {
 		if ( ! current_user_can( 'manage_options' ) )  {
 			// translators: Shown when trying to access the settings page without proper permissions.
-			wp_die( _x( 'You do not have sufficient permissions to access this page.', 'Shown when trying to access the settings page without proper permissions.', 'really-improved-save-button' ) );
+			wp_die( esc_html( _x( 'You do not have sufficient permissions to access this page.', 'Shown when trying to access the settings page without proper permissions.', 'really-improved-save-button' ) ) );
 		}
 		?>
 		<div class="wrap">
-		<h1><?php printf( _x('<em>%s</em> Settings', 'Settings page main title. %s = plugin name', 'really-improved-save-button'), 'Really Improved Save Button' ); ?></h1>
+		<h1><?php 
+		// translators: Settings page main title. %s = plugin name
+		echo esc_html( sprintf( _x('<em>%s</em> Settings', 'Settings page main title. %s = plugin name', 'really-improved-save-button'), 'Really Improved Save Button' ) ); ?></h1>
 		<form method="post" action="options.php" data-fwc-sat-settings="form">
 			<?php settings_fields( self::OPTION_GROUP ); ?>
 			<?php do_settings_sections( self::MENU_SLUG ); ?>
@@ -192,16 +194,16 @@ class FWC_Save_And_Then_Settings {
 		switch ( $args['option_name'] ) {
 			case 'set-as-default':
 				$html .= '<fieldset><label><input type="checkbox" name="' . $option_field_name. '" value="1"' . checked( 1, $option_value, false ) . '/>';
-				$html .= '<span>' . _x('Display the new save button as the default one.', 'Used in settings page', 'really-improved-save-button') . '</span></label></fieldset>';
+				$html .= '<span>' . esc_html( _x('Display the new save button as the default one.', 'Used in settings page', 'really-improved-save-button') ) . '</span></label></fieldset>';
 				break;
 			case 'actions':
 				$html .= '<fieldset>';
 				foreach ( $actions as $action_index => $action ) {
 					$action_id = $action->get_id();
 					$html .= '<label><input type="checkbox" name="' . $option_field_name . '['. $action_id .']" value="1" data-fwc-sat-settings="action" data-fwc-sat-settings-value="'. $action_id .'" ' . checked( 1, $option_value[ $action_id ], false ) . '/>';
-					$html .= '<span>' . $action->get_name() . '</span>';
+					$html .= '<span>' . esc_html( $action->get_name() ) . '</span>';
 					if( $action->get_description() ) {
-						$html .= ' <span class="description"> — ' . $action->get_description() . '</span>';
+						$html .= ' <span class="description"> — ' . esc_html( $action->get_description() ) . '</span>';
 					}
 					$html .= '</label>';
 					if( $action_index != count( $actions ) - 1 ) {
@@ -226,9 +228,9 @@ class FWC_Save_And_Then_Settings {
 						$action_description = '';
 					}
 					$html .= '<label><input type="radio" name="' . $option_field_name . '" value="'. $action_id .'" data-fwc-sat-settings="default"' . checked( $action_id, $option_value, false ) . '/>';
-					$html .= '<span>' . $action_name . '</span>';
+					$html .= '<span>' . esc_html( $action_name ) . '</span>';
 					if( $action_description ) {
-						$html .= ' <span class="description"> — ' . $action_description . '</span>';
+						$html .= ' <span class="description"> — ' . esc_html( $action_description ) . '</span>';
 					}
 					$html .= '</label>';
 					$action_index++;
@@ -236,7 +238,8 @@ class FWC_Save_And_Then_Settings {
 				$html .= '</fieldset>';
 				break;
 		}
-		echo $html;
+		// Output the generated HTML for the field, escaping for safe output
+		echo wp_kses_post($html);
 	}
 
 	/**

@@ -41,6 +41,10 @@ class FWC_Save_And_Then_Messages {
 	static function setup() {
 		add_filter( 'post_updated_messages', array( get_called_class(), 'post_updated_messages' ), 99 );
 		add_filter( 'removable_query_args', array( get_called_class(), 'removable_query_args' ), 99 );
+		// Add nonce field to the post edit form for this action
+		add_action('edit_form_after_title', function() {
+			wp_nonce_field('fwc_sat_messages_action', '_fwc_sat_messages_nonce');
+		});
 	}
 
 	/**
@@ -76,14 +80,17 @@ class FWC_Save_And_Then_Messages {
 		if( ! isset( $_REQUEST[ self::HTTP_PARAM_UPDATED_POST_ID ] ) ) {
 			return $messages;
 		}
-
+		$nonce = isset( $_REQUEST['_fwc_sat_messages_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_fwc_sat_messages_nonce'] ) ) : '';
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'fwc_sat_messages_action' ) ) {
+			return $messages;
+		}
 		// In the default messages, the post URL references the
 		// current post. With our plugin, we need to change
 		// those URLs to the ones of the post that was just edited.
 
 		$current_post = get_post();
 		$post_ID = $current_post->ID;
-		$previous_post_ID = intval( $_REQUEST[ self::HTTP_PARAM_UPDATED_POST_ID ] );
+		$previous_post_ID = intval( sanitize_text_field( wp_unslash( $_REQUEST[ self::HTTP_PARAM_UPDATED_POST_ID ] ) ) );
 
 		// Check if the post exists
 		if (false === get_post_status($previous_post_ID)) {

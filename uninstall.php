@@ -36,6 +36,7 @@ if( ! is_multisite() ) {
 		// Direct database query is used here to retrieve all blog IDs for multisite uninstall.
 		// This is necessary because WordPress does not provide a built-in function for this.
 		// Result is cached to avoid repeated queries and minimize DB load during uninstall.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 		wp_cache_set( 'fwc_all_blog_ids', $blog_ids, 'fwc_save_and_then', 300 );
 	}

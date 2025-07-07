@@ -72,7 +72,7 @@ class FWC_Save_And_Then_Post_Save {
 		}
 
 		// Nonce verification for save-and-then action
-		if ( ! isset( $_POST['_fwc_sat_action_nonce'] ) || ! wp_verify_nonce( $_POST['_fwc_sat_action_nonce'], 'fwc_sat_action' ) ) {
+		if ( ! isset( $_POST['_fwc_sat_action_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_fwc_sat_action_nonce'] ) ), 'fwc_sat_action' ) ) {
 			return $location;
 		}
 

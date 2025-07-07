@@ -174,24 +174,23 @@ class FWC_Save_And_Then_Action_Duplicate extends FWC_Save_And_Then_Action {
 		// Direct database queries are used here for efficient bulk meta copying.
 		// This is a one-time admin operation, only triggered by a user action in the admin panel.
 		// Caching is not needed because this is not a repeated or performance-critical operation.
-		// wp_insert_post allows to pass meta values, but since
-		// we would have to make one SQL query for each meta,
-		// we use those 2 SQL queries to copy them all.
+		// There is no WordPress API for bulk meta copy; using $wpdb is the only efficient way.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$post_meta_infos = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $from_post->ID ) );
 		if ( count( $post_meta_infos ) != 0 ) {
-			$values = array();
-			$placeholders = array();
+			$values_sql = array();
 			foreach ( $post_meta_infos as $meta_info ) {
-				$placeholders[] = "(%d, %s, %s)";
-				$values[] = $to_post->ID;
-				$values[] = $meta_info->meta_key;
-				$values[] = $meta_info->meta_value;
+				$values_sql[] = $wpdb->prepare(
+					"(%d, %s, %s)",
+					$to_post->ID,
+					$meta_info->meta_key,
+					$meta_info->meta_value
+				);
 			}
-			// Direct database query for bulk insert. Safe in this admin-only context.
-			// No caching is needed as this is a one-time operation per duplication.
-			$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES ".implode(",", $placeholders);
-			$prepared_query = $wpdb->prepare( $sql_query, ...$values );
-			$wpdb->query( $prepared_query );
+			if ( ! empty( $values_sql ) ) {
+				$query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES " . implode( ', ', $values_sql );
+				$wpdb->query( $query );
+			}
 		}
 	}
 }

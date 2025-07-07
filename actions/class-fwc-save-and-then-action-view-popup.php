@@ -82,7 +82,7 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 		wp_localize_script('fwc-view-popup', 'FWCViewPopupData', array(
 			'actionId'    => $this->get_id(),
 			'windowName'  => 'fwc-save-and-then-post-preview',
-			'waitMessage' => _ex('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'really-improved-save-button'),
+			'waitMessage' => esc_html( _x('Please wait while the post is being saved. This window will refresh automatically.', 'Message shown in the new window when "Save and view (new window)" is used.', 'really-improved-save-button') ),
 			'reloadPopup' => $reload_popup,
 			'permalink'   => $permalink,
 		));
@@ -116,7 +116,7 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	 */	
 	function get_button_label_pattern( $post ) {
 		// translators: Button label (used in post edit page). %%s = "Publish" or "Update"; %s = new window icon
-		// The first %s must be escaped, because it is not replaced by this sprintf
+		// translators: The first %s must be escaped, because it is not replaced by this sprintf. The second %s is replaced by the new window icon HTML.
 		return sprintf( _x('%%s and View %s', 'Button label (used in post edit page). %%s = "Publish" or "Update"; %s = new window icon', 'really-improved-save-button'), self::HTML_ICON );
 	}
 
@@ -134,7 +134,7 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 
 	/**
 	 * Returns the current redirect url, but adds the parameter to
-	 * trigger the JavaScript popup reload.
+	 * trigger the JavaScript popup reload. Verifies nonce before processing.
 	 *
 	 * @see FWC_Save_And_Then_Action
 	 * @param  string $current_url
@@ -142,6 +142,10 @@ class FWC_Save_And_Then_Action_View_Popup extends FWC_Save_And_Then_Action {
 	 * @return string
 	 */
 	function get_redirect_url( $current_url, $post ) {
+		$nonce = isset( $_REQUEST['_fwc_sat_view_popup_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_fwc_sat_view_popup_nonce'] ) ) : '';
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'fwc_sat_view_popup_action' ) ) {
+			return $current_url;
+		}
 		$url = get_permalink( $post );
 		return $url;
 	}

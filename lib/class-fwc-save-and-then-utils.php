@@ -96,37 +96,40 @@ class FWC_Save_And_Then_Utils {
 			// Direct database query is used here to efficiently find the adjacent post.
 			// This is necessary because WordPress core does not provide a performant way to get adjacent posts for all statuses.
 			// Result is cached using wp_cache_set to avoid repeated queries and minimize DB load.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$op = $dir == 'next' ? '>' : '<';
 			$order = $dir == 'next' ? 'ASC' : 'DESC';
 			$exclude_states = get_post_stati( array( 'show_in_admin_all_list' => false ) );
 			$additionnal_where = '';
+			$params = array($post->post_type, $post->post_date, $post->post_date, $post->ID);
+			if ( ! empty($exclude_states) ) {
+				$exclude_states_placeholders = implode(",", array_fill(0, count($exclude_states), '%s'));
+			} else {
+				$exclude_states_placeholders = '';
+			}
+			$params = array_merge($params, $exclude_states);
+			$author_id = null;
 			$post_type_object = get_post_type_object( get_post_type( $post ) );
 			if ( ! current_user_can( $post_type_object->cap->edit_others_posts ) ) {
-				$additionnal_where .= ' AND post_author = %d';
+				$additionnal_where = ' AND post_author = %d';
 				$author_id = get_current_user_id();
-			} else {
-				$author_id = null;
+				$params[] = $author_id;
 			}
-			$exclude_states_placeholders = implode(",", array_fill(0, count($exclude_states), '%s'));
 			$sql = "SELECT p.ID FROM $wpdb->posts AS p
 				WHERE p.post_type = %s
 				AND (
 					p.post_date $op %s
 					OR
 					(p.post_date = %s AND p.ID $op %s)
-				)
-				AND (p.post_status NOT IN ($exclude_states_placeholders))
-				$additionnal_where
-				ORDER BY p.post_date $order, p.ID $order LIMIT 1";
-			$params = array_merge(
-				[$post->post_type, $post->post_date, $post->post_date, $post->ID],
-				$exclude_states
-			);
-			if ($author_id !== null) {
-				$params[] = $author_id;
+				)";
+			if ( ! empty($exclude_states_placeholders) ) {
+				$sql .= " AND (p.post_status NOT IN ($exclude_states_placeholders))";
 			}
-			$query = $wpdb->prepare($sql, ...$params);
-			$found_post_id = $wpdb->get_var( $query );
+			if ( $additionnal_where ) {
+				$sql .= $additionnal_where;
+			}
+			$sql .= " ORDER BY p.post_date $order, p.ID $order LIMIT 1";
+			$found_post_id = $wpdb->get_var($wpdb->prepare($sql, ...$params));
 			if( $found_post_id ) {
 				self::$adjacent_post_cache[ $cache_id ] = get_post( $found_post_id );
 				wp_cache_set( $cache_key, self::$adjacent_post_cache[ $cache_id ], 'fwc_save_and_then', 300 );

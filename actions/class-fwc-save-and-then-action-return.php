@@ -51,7 +51,8 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	function save_referer( $wp_screen ) {
 		if( $wp_screen->base == 'post' ) {
 			// Only execute this function in GET
-			if( ! isset($_SERVER['REQUEST_METHOD']) || strtoupper(wp_unslash($_SERVER['REQUEST_METHOD'])) !== 'GET' ) {
+			$request_method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD']))) : '';
+			if( $request_method !== 'GET' ) {
 				return;
 			}
 
@@ -123,7 +124,8 @@ class FWC_Save_And_Then_Action_Return extends FWC_Save_And_Then_Action {
 	 * @return string
 	 */
 	function get_redirect_url( $current_url, $post ) {
-		if ( ! isset( $_REQUEST['_fwc_sat_return_nonce'] ) || ! wp_verify_nonce( $_REQUEST['_fwc_sat_return_nonce'], 'fwc_sat_return_action' ) ) {
+		$nonce = isset( $_REQUEST['_fwc_sat_return_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_fwc_sat_return_nonce'] ) ) : '';
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'fwc_sat_return_action' ) ) {
 			return $current_url;
 		}
 		$referer = isset( $_REQUEST['_fwc-sat_return_referer'] ) ? esc_url_raw( wp_unslash( $_REQUEST['_fwc-sat_return_referer'] ) ) : '';
